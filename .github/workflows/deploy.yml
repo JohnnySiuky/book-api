@@ -2,39 +2,41 @@ name: Build & Deploy to Azure App Service (Recam Api)
 
 on:
   push:
-    branches: ["master"]
-    workflow_dispatch:
+    branches: ["master"]   
+  workflow_dispatch:
 
 env:
-  DOTNET_VERSION: "9.0"
+  DOTNET_VERSION: "9.0.x"
   PUBLISH_DIR: "publish"
 
 jobs:
   build-and-deploy:
-  runs-on: ubuntu-latest
+    runs-on: ubuntu-latest
 
-  steps:
-    - name: Git Checkout
-      uses: actions/checkout@v4
+    steps:
+      - name: Git Checkout
+        uses: actions/checkout@v4
 
-    - name: Setup Dependencies
-      uses: actions/setup-dotnet@v4
-      with: dotnet-version:${{ env.DOTNET_VERSION }}
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
 
-    - name: Restore Package
-      run: dotnet restore
+      - name: Restore packages
+        run: dotnet restore
 
-    - name: build Api
-      run: dotnet build --configuration Release --no-restore
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
 
-    - name: Test
-      run: dotnet test --configuration Release --no-build
+      - name: Test
+        run: dotnet test --configuration Release --no-build
 
-    - name: Publish
-      run: dotnet publish -c Release -o ${{PUBLISH_DIR}}
+      - name: Publish
+        run: dotnet publish -c Release -o ${{ env.PUBLISH_DIR }}
 
-    - name: Deploy to azure web app service
-      uses: azure/webapps-deploy@v3
-      with:
-        publish-profile: ${{secrets.AZURE_WEBAPP_PUBLISH_PROFILE}}
-        package: ${{env.PUBLISH_DIR}}
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v3
+        with:
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: ${{ env.PUBLISH_DIR }}
+          
