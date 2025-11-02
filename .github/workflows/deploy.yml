@@ -11,15 +11,15 @@ env:
 
 jobs:
   build-and-deploy:
-  run-on: ubuntu-latest
+  runs-on: ubuntu-latest
 
-  step:
+  steps:
     - name: Git Checkout
       uses: actions/checkout@v4
 
     - name: Setup Dependencies
       uses: actions/setup-dotnet@v4
-      with: dotnet-version:${{env.DOTNET_VERSION}}
+      with: dotnet-version:${{ env.DOTNET_VERSION }}
 
     - name: Restore Package
       run: dotnet restore
