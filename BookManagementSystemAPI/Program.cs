@@ -15,6 +15,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Reflection;
 using System.Text;
 using System.Text.Json.Serialization;
+using Microsoft.Extensions.Logging.ApplicationInsights;
 
 namespace BookManagementSystemAPI
 {
@@ -60,6 +61,8 @@ namespace BookManagementSystemAPI
 
             builder.Services.AddApplicationInsightsTelemetry(builder.Configuration["ApplicationInsights:ConnectionString"]);
             builder.Logging.AddApplicationInsights();
+            builder.Logging.AddFilter<ApplicationInsightsLoggerProvider>("", LogLevel.Information);
+
 
             builder.Services.AddDbContext<BookDbContext>(
                     options => options.UseSqlServer(builder.Configuration.GetConnectionString("BookDb"))
